@@ -1,5 +1,4 @@
-const { createTask, addTask, removeTask, resetId, filterTasks, countTasks, countCompleted, countPending, validatePriority, filterByPriority, isDuplicate } = require('../src/taskManager');
-
+const { createTask, addTask, removeTask, resetId, filterTasks, countTasks, countCompleted, countPending, validatePriority, filterByPriority, isDuplicate, sortTasks } = require('../src/taskManager');
 
 describe('removeTask', () => {
   let tasks;
@@ -219,5 +218,57 @@ describe('addTask com duplicatas', () => {
   it('deve lançar erro ignorando maiúsculas', () => {
     let tasks = addTask([], 'Estudar');
     expect(() => addTask(tasks, 'estudar')).toThrow();
+  });
+});
+describe('sortTasks', () => {
+  beforeEach(() => resetId());
+
+  it('deve colocar pendentes antes de concluídas', () => {
+    let tasks = addTask([], 'Tarefa 1');
+    tasks = addTask(tasks, 'Tarefa 2');
+    tasks[0] = { ...tasks[0], completed: true };
+    const result = sortTasks(tasks);
+    expect(result[0].completed).toBe(false);
+    expect(result[1].completed).toBe(true);
+  });
+
+  it('deve manter a ordem dentro de cada grupo', () => {
+    let tasks = addTask([], 'Tarefa 1');
+    tasks = addTask(tasks, 'Tarefa 2');
+    tasks = addTask(tasks, 'Tarefa 3');
+    tasks[0] = { ...tasks[0], completed: true };
+    tasks[2] = { ...tasks[2], completed: true };
+    const result = sortTasks(tasks);
+    expect(result[0].title).toBe('Tarefa 2');
+    expect(result[1].title).toBe('Tarefa 1');
+    expect(result[2].title).toBe('Tarefa 3');
+  });
+
+  it('deve retornar array vazio se lista vazia', () => {
+    expect(sortTasks([])).toHaveLength(0);
+  });
+
+  it('deve retornar um novo array (imutabilidade)', () => {
+    let tasks = addTask([], 'Tarefa 1');
+    const result = sortTasks(tasks);
+    expect(result).not.toBe(tasks);
+  });
+
+  it('deve manter ordem se todas forem pendentes', () => {
+    let tasks = addTask([], 'Tarefa 1');
+    tasks = addTask(tasks, 'Tarefa 2');
+    const result = sortTasks(tasks);
+    expect(result[0].title).toBe('Tarefa 1');
+    expect(result[1].title).toBe('Tarefa 2');
+  });
+
+  it('deve manter ordem se todas forem concluídas', () => {
+    let tasks = addTask([], 'Tarefa 1');
+    tasks = addTask(tasks, 'Tarefa 2');
+    tasks[0] = { ...tasks[0], completed: true };
+    tasks[1] = { ...tasks[1], completed: true };
+    const result = sortTasks(tasks);
+    expect(result[0].title).toBe('Tarefa 1');
+    expect(result[1].title).toBe('Tarefa 2');
   });
 });
