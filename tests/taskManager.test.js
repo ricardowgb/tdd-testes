@@ -1,4 +1,5 @@
-const { createTask, addTask, removeTask, resetId, filterTasks, countTasks, countCompleted, countPending, validatePriority, filterByPriority } = require('../src/taskManager');
+const { createTask, addTask, removeTask, resetId, filterTasks, countTasks, countCompleted, countPending, validatePriority, filterByPriority, isDuplicate } = require('../src/taskManager');
+
 
 describe('removeTask', () => {
   let tasks;
@@ -183,5 +184,40 @@ describe('filterByPriority', () => {
   it('deve retornar array vazio se não houver tarefas com essa prioridade', () => {
     const result = filterByPriority(tasks, 'medium');
     expect(result).toHaveLength(0);
+  });
+});
+describe('isDuplicate', () => {
+  it('deve retornar true se título já existe', () => {
+    const tasks = [{ title: 'Estudar' }];
+    expect(isDuplicate(tasks, 'Estudar')).toBe(true);
+  });
+
+  it('deve retornar true ignorando maiúsculas e minúsculas', () => {
+    const tasks = [{ title: 'Estudar' }];
+    expect(isDuplicate(tasks, 'estudar')).toBe(true);
+  });
+
+  it('deve retornar true ignorando espaços extras', () => {
+    const tasks = [{ title: 'Estudar' }];
+    expect(isDuplicate(tasks, '  Estudar  ')).toBe(true);
+  });
+
+  it('deve retornar false se título não existe', () => {
+    const tasks = [{ title: 'Estudar' }];
+    expect(isDuplicate(tasks, 'Trabalhar')).toBe(false);
+  });
+});
+
+describe('addTask com duplicatas', () => {
+  beforeEach(() => resetId());
+
+  it('deve lançar erro ao adicionar tarefa duplicada', () => {
+    let tasks = addTask([], 'Estudar');
+    expect(() => addTask(tasks, 'Estudar')).toThrow();
+  });
+
+  it('deve lançar erro ignorando maiúsculas', () => {
+    let tasks = addTask([], 'Estudar');
+    expect(() => addTask(tasks, 'estudar')).toThrow();
   });
 });
