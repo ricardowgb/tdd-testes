@@ -14,6 +14,9 @@ function createTask(title, priority = 'medium') {
 }
 
 function addTask(tasks, title) {
+  if (isDuplicate(tasks, title)) {
+    throw new Error('Já existe uma tarefa com esse título');
+  }
   const task = createTask(title);
   return [...tasks, task];
 }
@@ -22,7 +25,13 @@ function removeTask(tasks, taskId) {
   return tasks.filter(task => task.id !== taskId);
 }
 
-module.exports = { createTask, addTask, removeTask, resetId, filterTasks, countTasks, countCompleted, countPending, validatePriority, filterByPriority };
+function isDuplicate(tasks, title) {
+  const normalizado = title.trim().toLowerCase();
+  return tasks.some(task => task.title.trim().toLowerCase() === normalizado);
+}
+
+module.exports = { createTask, addTask, removeTask, resetId, filterTasks, countTasks, countCompleted, countPending, validatePriority, filterByPriority, isDuplicate };
+
 
 function filterTasks(tasks, status) {
   switch (status) {
