@@ -21,4 +21,15 @@ function removeTask(tasks, taskId) {
   return tasks.filter(task => task.id !== taskId);
 }
 
-module.exports = { createTask, addTask, removeTask, resetId };
+module.exports = { createTask, addTask, removeTask, resetId, filterTasks };
+
+function filterTasks(tasks, status) {
+  switch (status) {
+    case 'completed':
+      return tasks.filter(task => task.completed === true);
+    case 'pending':
+      return tasks.filter(task => task.completed === false);
+    default:
+      return [...tasks];
+  }
+}
