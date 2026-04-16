@@ -35,12 +35,14 @@ function sortTasks(tasks) {
   const concluidas = tasks.filter(task => task.completed === true);
   return [...pendentes, ...concluidas];
 }
+function searchTasks(tasks, query) {
+  if (query === '') return [...tasks];
+  return tasks.filter(task => task.title.toLowerCase().includes(query.toLowerCase()));
+}
 
 
 
-module.exports = { createTask, addTask, removeTask, resetId, filterTasks, countTasks, countCompleted, countPending, validatePriority, filterByPriority, isDuplicate, sortTasks };
-
-
+module.exports = { createTask, addTask, removeTask, resetId, filterTasks, countTasks, countCompleted, countPending, validatePriority, filterByPriority, isDuplicate, sortTasks, searchTasks };
 
 function filterTasks(tasks, status) {
   switch (status) {
