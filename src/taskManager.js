@@ -21,7 +21,7 @@ function removeTask(tasks, taskId) {
   return tasks.filter(task => task.id !== taskId);
 }
 
-module.exports = { createTask, addTask, removeTask, resetId, filterTasks };
+module.exports = { createTask, addTask, removeTask, resetId, filterTasks, countTasks, countCompleted, countPending };
 
 function filterTasks(tasks, status) {
   switch (status) {
@@ -32,4 +32,16 @@ function filterTasks(tasks, status) {
     default:
       return [...tasks];
   }
+}
+
+function countTasks(tasks) {
+  return tasks.length;
+}
+
+function countCompleted(tasks) {
+  return tasks.filter(task => task.completed === true).length;
+}
+
+function countPending(tasks) {
+  return tasks.filter(task => task.completed === false).length;
 }
