@@ -1,4 +1,4 @@
-const { createTask, addTask, removeTask, resetId, filterTasks, countTasks, countCompleted, countPending, validatePriority, filterByPriority, isDuplicate, sortTasks } = require('../src/taskManager');
+const { createTask, addTask, removeTask, resetId, filterTasks, countTasks, countCompleted, countPending, validatePriority, filterByPriority, isDuplicate, sortTasks, searchTasks } = require('../src/taskManager');
 
 describe('removeTask', () => {
   let tasks;
@@ -270,5 +270,46 @@ describe('sortTasks', () => {
     const result = sortTasks(tasks);
     expect(result[0].title).toBe('Tarefa 1');
     expect(result[1].title).toBe('Tarefa 2');
+  });
+});
+describe('searchTasks', () => {
+  beforeEach(() => resetId());
+
+  it('deve encontrar tarefas cujo título contém a query', () => {
+    let tasks = addTask([], 'Estudar');
+    tasks = addTask(tasks, 'Testar');
+    tasks = addTask(tasks, 'Dormir');
+    const result = searchTasks(tasks, 'est');
+    expect(result).toHaveLength(2);
+  });
+
+  it('deve funcionar de forma case-insensitive', () => {
+    let tasks = addTask([], 'Estudar');
+    tasks = addTask(tasks, 'Testar');
+    const result = searchTasks(tasks, 'EST');
+    expect(result).toHaveLength(2);
+  });
+
+  it('deve retornar array vazio se nenhuma tarefa corresponder', () => {
+    let tasks = addTask([], 'Estudar');
+    const result = searchTasks(tasks, 'xyz');
+    expect(result).toHaveLength(0);
+  });
+
+  it('deve retornar array vazio se lista vazia', () => {
+    expect(searchTasks([], 'algo')).toHaveLength(0);
+  });
+
+  it('deve retornar todas as tarefas se query for string vazia', () => {
+    let tasks = addTask([], 'Estudar');
+    tasks = addTask(tasks, 'Dormir');
+    const result = searchTasks(tasks, '');
+    expect(result).toHaveLength(2);
+  });
+
+  it('deve retornar um novo array (imutabilidade)', () => {
+    let tasks = addTask([], 'Estudar');
+    const result = searchTasks(tasks, 'Est');
+    expect(result).not.toBe(tasks);
   });
 });
