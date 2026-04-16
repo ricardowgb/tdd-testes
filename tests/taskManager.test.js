@@ -1,4 +1,4 @@
-const { createTask, addTask, removeTask, resetId, filterTasks, countTasks, countCompleted, countPending } = require('../src/taskManager');
+const { createTask, addTask, removeTask, resetId, filterTasks, countTasks, countCompleted, countPending, validatePriority, filterByPriority } = require('../src/taskManager');
 
 describe('removeTask', () => {
   let tasks;
@@ -129,5 +129,59 @@ describe('countPending', () => {
     let tasks = addTask([], 'Tarefa 1');
     tasks[0] = { ...tasks[0], completed: true };
     expect(countPending(tasks)).toBe(0);
+  });
+});
+describe('createTask com priority', () => {
+  beforeEach(() => resetId());
+
+  it('deve criar tarefa com priority high', () => {
+    const task = createTask('Tarefa', 'high');
+    expect(task.priority).toBe('high');
+  });
+
+  it('deve usar medium como prioridade padrão', () => {
+    const task = createTask('Tarefa');
+    expect(task.priority).toBe('medium');
+  });
+});
+
+describe('validatePriority', () => {
+  it('deve retornar true para high', () => {
+    expect(validatePriority('high')).toBe(true);
+  });
+
+  it('deve retornar true para medium', () => {
+    expect(validatePriority('medium')).toBe(true);
+  });
+
+  it('deve retornar true para low', () => {
+    expect(validatePriority('low')).toBe(true);
+  });
+
+  it('deve retornar false para valor inválido', () => {
+    expect(validatePriority('urgente')).toBe(false);
+  });
+});
+
+describe('filterByPriority', () => {
+  let tasks;
+
+  beforeEach(() => {
+    resetId();
+    tasks = addTask([], 'Tarefa 1');
+    tasks = addTask(tasks, 'Tarefa 2');
+    tasks[0] = { ...tasks[0], priority: 'high' };
+    tasks[1] = { ...tasks[1], priority: 'low' };
+  });
+
+  it('deve retornar apenas tarefas de alta prioridade', () => {
+    const result = filterByPriority(tasks, 'high');
+    expect(result).toHaveLength(1);
+    expect(result[0].priority).toBe('high');
+  });
+
+  it('deve retornar array vazio se não houver tarefas com essa prioridade', () => {
+    const result = filterByPriority(tasks, 'medium');
+    expect(result).toHaveLength(0);
   });
 });
