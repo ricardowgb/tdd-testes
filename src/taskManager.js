@@ -30,7 +30,16 @@ function isDuplicate(tasks, title) {
   return tasks.some(task => task.title.trim().toLowerCase() === normalizado);
 }
 
-module.exports = { createTask, addTask, removeTask, resetId, filterTasks, countTasks, countCompleted, countPending, validatePriority, filterByPriority, isDuplicate };
+function sortTasks(tasks) {
+  const pendentes = tasks.filter(task => task.completed === false);
+  const concluidas = tasks.filter(task => task.completed === true);
+  return [...pendentes, ...concluidas];
+}
+
+
+
+module.exports = { createTask, addTask, removeTask, resetId, filterTasks, countTasks, countCompleted, countPending, validatePriority, filterByPriority, isDuplicate, sortTasks };
+
 
 
 function filterTasks(tasks, status) {
