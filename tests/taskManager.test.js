@@ -1,4 +1,4 @@
-const { createTask, addTask, removeTask, resetId, filterTasks } = require('../src/taskManager');
+const { createTask, addTask, removeTask, resetId, filterTasks, countTasks, countCompleted, countPending } = require('../src/taskManager');
 
 describe('removeTask', () => {
   let tasks;
@@ -74,5 +74,60 @@ describe('filterTasks', () => {
   it('deve retornar um novo array (imutabilidade)', () => {
     const result = filterTasks(tasks, 'all');
     expect(result).not.toBe(tasks);
+  });
+});
+
+describe('countTasks', () => {
+  beforeEach(() => resetId());
+
+  it('deve retornar 0 para lista vazia', () => {
+    expect(countTasks([])).toBe(0);
+  });
+
+  it('deve retornar o total de tarefas', () => {
+    let tasks = addTask([], 'Tarefa 1');
+    tasks = addTask(tasks, 'Tarefa 2');
+    expect(countTasks(tasks)).toBe(2);
+  });
+});
+
+describe('countCompleted', () => {
+  beforeEach(() => resetId());
+
+  it('deve retornar 0 para lista vazia', () => {
+    expect(countCompleted([])).toBe(0);
+  });
+
+  it('deve contar apenas tarefas concluídas', () => {
+    let tasks = addTask([], 'Tarefa 1');
+    tasks = addTask(tasks, 'Tarefa 2');
+    tasks[0] = { ...tasks[0], completed: true };
+    expect(countCompleted(tasks)).toBe(1);
+  });
+
+  it('deve retornar 0 quando não há concluídas', () => {
+    let tasks = addTask([], 'Tarefa 1');
+    expect(countCompleted(tasks)).toBe(0);
+  });
+});
+
+describe('countPending', () => {
+  beforeEach(() => resetId());
+
+  it('deve retornar 0 para lista vazia', () => {
+    expect(countPending([])).toBe(0);
+  });
+
+  it('deve contar apenas tarefas pendentes', () => {
+    let tasks = addTask([], 'Tarefa 1');
+    tasks = addTask(tasks, 'Tarefa 2');
+    tasks[0] = { ...tasks[0], completed: true };
+    expect(countPending(tasks)).toBe(1);
+  });
+
+  it('deve retornar 0 quando não há pendentes', () => {
+    let tasks = addTask([], 'Tarefa 1');
+    tasks[0] = { ...tasks[0], completed: true };
+    expect(countPending(tasks)).toBe(0);
   });
 });
