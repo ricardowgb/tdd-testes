@@ -1,4 +1,4 @@
-const { createTask, addTask, removeTask, resetId } = require('../src/taskManager');
+const { createTask, addTask, removeTask, resetId, filterTasks } = require('../src/taskManager');
 
 describe('removeTask', () => {
   let tasks;
@@ -33,5 +33,46 @@ describe('removeTask', () => {
   it('deve retornar array vazio se a lista estiver vazia', () => {
     const result = removeTask([], 1);
     expect(result).toHaveLength(0);
+  });
+});
+
+describe('filterTasks', () => {
+  let tasks;
+
+  beforeEach(() => {
+    resetId();
+    tasks = addTask([], 'Tarefa 1');
+    tasks = addTask(tasks, 'Tarefa 2');
+    tasks[0] = { ...tasks[0], completed: true };
+  });
+
+  it('deve retornar todas as tarefas com filtro all', () => {
+    const result = filterTasks(tasks, 'all');
+    expect(result).toHaveLength(2);
+  });
+
+  it('deve retornar apenas pendentes com filtro pending', () => {
+    const result = filterTasks(tasks, 'pending');
+    expect(result).toHaveLength(1);
+  });
+
+  it('deve retornar apenas concluídas com filtro completed', () => {
+    const result = filterTasks(tasks, 'completed');
+    expect(result).toHaveLength(1);
+  });
+
+  it('deve retornar todas com filtro desconhecido', () => {
+    const result = filterTasks(tasks, 'outro');
+    expect(result).toHaveLength(2);
+  });
+
+  it('deve retornar array vazio se lista vazia', () => {
+    const result = filterTasks([], 'all');
+    expect(result).toHaveLength(0);
+  });
+
+  it('deve retornar um novo array (imutabilidade)', () => {
+    const result = filterTasks(tasks, 'all');
+    expect(result).not.toBe(tasks);
   });
 });
